@@ -1,0 +1,80 @@
+.button__wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 40px;
+    flex-basis: 45px;
+    margin: 3px;
+    border: 1px solid darkorange;
+    position: relative;
+    font-size: 1.15rem;
+    letter-spacing: 0.06em;
+}
+
+.sub {
+    align-self: flex-start;
+    color: red;
+    position: absolute;
+    left: 3px;
+    top: 0;
+    font-size: .8rem;
+}
+
+.key {
+    text-align: center;
+}
+
+.key-fn {
+    background-image: linear-gradient(to right, #2c3e50, #4ca1af);
+}
+
+.active {
+    background: rgba(209, 209, 212, 0.199);
+}
+
+[data-code='Backspace']{
+    flex-grow: 1;
+}
+
+[data-code='Tab']{
+    flex-basis: 65px;
+}
+
+[data-code='Backslash']{
+    flex-grow: 1;
+}
+
+[data-code='CapsLock']{
+    flex-basis: 95px;
+}
+
+[data-code='Enter']{
+    flex-grow: 1;
+}
+
+[data-code='ControlLeft']{
+    flex-basis: 75px;
+}
+
+[data-code='ControlRight']{
+    flex-basis: 75px;
+}
+
+[data-code='AltLeft']{
+    flex-basis: 75px;
+}
+
+[data-code='AltRight']{
+    flex-basis: 75px;
+}
+
+[data-code='Space']{
+    flex-grow: 1;
+}
+
+[data-code='ShiftLeft']{
+    flex-basis: 90px;
+}
+[data-code='ShiftRight']{
+    flex-basis: 60px;
+}
