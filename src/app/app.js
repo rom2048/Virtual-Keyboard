@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import Control from '../utils/control';
 import layouts from './layouts/layouts';
 import style from './styles/app.css';
@@ -56,6 +57,7 @@ class App extends Control {
     if (type.match(/keydown|mousedown/)) {
       if (!type.match(/mouse/)) e.preventDefault();
       if (code.match(/Shift/)) this.shiftKey = true;
+      if (this.shiftKey) this.switchUpperCase(true);
       if (code.match(/Control|Alt|Caps/) && e.repeat) return;
       if (code.match(/Control/)) this.ctrKey = true;
       if (code.match(/Alt/)) this.altKey = true;
@@ -64,8 +66,10 @@ class App extends Control {
       // Caps Lock
       if (code.match(/Caps/) && !this.isCaps) {
         this.isCaps = true;
+        this.switchUpperCase(true);
       } else if (code.match(/Caps/) && this.isCaps) {
         this.isCaps = false;
+        this.switchUpperCase(false);
         btnObj.button.node.classList.remove(buttonCSS.active);
       }
       // sub or default char
@@ -73,14 +77,19 @@ class App extends Control {
         this.print(btnObj, this.shiftKey ? btnObj.shift : btnObj.small);
       } else if (this.isCaps) {
         // caps on - check shift
-        if (this.shiftKey) {
+        if (this.shiftKey) { // shift pressed
+          this.print(btnObj, btnObj.sub.node.innerHTML ? btnObj.shift : btnObj.small);
         } else {
           // shift off
+          this.print(btnObj, !btnObj.sub.node.innerHTML ? btnObj.shift : btnObj.small)
         }
       }
       this.keyPressed[btnObj.code] = btnObj;
     } else if (type.match(/keyup|mouseup/)) {
-      if (code.match(/Shift/)) this.shiftKey = false;
+      if (code.match(/Shift/)) {
+        this.shiftKey = false;
+        this.switchUpperCase(false);
+      };
       if (code.match(/Control/)) this.ctrKey = false;
       if (code.match(/Alt/)) this.altKey = false;
       if (!code.match(/Caps/)) btnObj.button.node.classList.remove(buttonCSS.active);
@@ -90,18 +99,45 @@ class App extends Control {
   switchUpperCase = (isTrue) => {
     if (isTrue) {
       this.keyButtons.forEach((btn) => {
+        //caps on AND shift off AND no sub
         if (!btn.isFnKey && this.isCaps && !this.shiftKey && !btn.sub.node.innerHTML) {
+          btn.char.node.innerHTML = btn.shift;
+          //caps on AND shift on
+        } else if (!btn.isFnKey && this.isCaps && this.shiftKey) {
+          //then small char
+          btn.char.node.innerHTML = btn.small;
+          //else only shift on
+        } else if (!btn.isFnKey && !btn.sub.node.innerHTML) {
           btn.char.node.innerHTML = btn.shift;
         }
       });
+    } else {
+      //keydown
+      this.keyButtons.forEach((btn) => {
+        //have sub
+        if (btn.sub.node.innerHTML && !btn.isFnKey){
+          //caps off
+          if (!this.isCaps) {
+            btn.char.node.innerHTML = btn.small;
+            //caps on
+          } else if (!this.isCaps) {
+            btn.char.node.innerHTML = btn.shift
+          }
+        } else if (!btn.isFnKey){
+          //caps on
+          if (this.isCaps) {
+            btn.char.node.innerHTML = btn.shift
+          } else {
+            btn.char.node.innerHTML = btn.small;
+          }
+        }
+      })
     }
   };
 
   switchLanguage = () => {
     const layoutAbbr = Object.keys(layouts); // ['ru', 'en']
-    const nextLanguage = layoutAbbr.find((lang) => {
-      lang !== this.keyBoardWrapper.node.dataset.language;
-    });
+    const nextLanguage = layoutAbbr.find((l) => l !== this.keyBoardWrapper.node.dataset.language);
     this.keyBase = layouts[nextLanguage]; // switch language layout
     this.keyBoardWrapper.node.dataset.language = nextLanguage;
     set('keyboardLang', nextLanguage);
@@ -117,6 +153,7 @@ class App extends Control {
       }
       button.char.node.innerHTML = btnObj.small;
     });
+    if (this.isCaps) this.switchUpperCase(true);
   };
 
   print = (btnObj, symbol) => {
