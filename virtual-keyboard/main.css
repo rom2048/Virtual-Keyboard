@@ -62,6 +62,7 @@ textarea:focus::placeholder {
     display: flex;
     justify-content: center;
     align-items: center;
+    cursor: pointer;
     height: 40px;
     flex-basis: 45px;
     margin: 3px;
@@ -69,6 +70,10 @@ textarea:focus::placeholder {
     position: relative;
     font-size: 1.15rem;
     letter-spacing: 0.06em;
+}
+
+.JkH9d3mmHFKi8HRupvWM:hover {
+    background: rgba(209, 209, 212, 0.199);
 }
 
 .N6stnBy0voqTIC8J6l6P {
