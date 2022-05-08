@@ -81,7 +81,7 @@ class App extends Control {
           this.print(btnObj, btnObj.sub.node.innerHTML ? btnObj.shift : btnObj.small);
         } else {
           // shift off
-          this.print(btnObj, !btnObj.sub.node.innerHTML ? btnObj.shift : btnObj.small)
+          this.print(btnObj, !btnObj.sub.node.innerHTML ? btnObj.shift : btnObj.small);
         }
       }
       this.keyPressed[btnObj.code] = btnObj;
@@ -89,7 +89,7 @@ class App extends Control {
       if (code.match(/Shift/)) {
         this.shiftKey = false;
         this.switchUpperCase(false);
-      };
+      }
       if (code.match(/Control/)) this.ctrKey = false;
       if (code.match(/Alt/)) this.altKey = false;
       if (!code.match(/Caps/)) btnObj.button.node.classList.remove(buttonCSS.active);
@@ -99,39 +99,43 @@ class App extends Control {
   switchUpperCase = (isTrue) => {
     if (isTrue) {
       this.keyButtons.forEach((btn) => {
-        //caps on AND shift off AND no sub
+        // caps on AND shift off AND no sub
         if (!btn.isFnKey && this.isCaps && !this.shiftKey && !btn.sub.node.innerHTML) {
-          btn.char.node.innerHTML = btn.shift;
-          //caps on AND shift on
+          if (btn.code === 'MetaLeft' || btn.code === 'ContextMenu'){
+            btn.char.node.innerHTML = btn.small;
+          } else {
+            btn.char.node.innerHTML = btn.shift;
+          }
+          // caps on AND shift on
         } else if (!btn.isFnKey && this.isCaps && this.shiftKey) {
-          //then small char
+          // then small char
           btn.char.node.innerHTML = btn.small;
-          //else only shift on
+          // else only shift on
         } else if (!btn.isFnKey && !btn.sub.node.innerHTML) {
           btn.char.node.innerHTML = btn.shift;
         }
       });
     } else {
-      //keydown
+      // keydown
       this.keyButtons.forEach((btn) => {
-        //have sub
-        if (btn.sub.node.innerHTML && !btn.isFnKey){
-          //caps off
-          if (!this.isCaps) {
+        // have sub
+        if (btn.sub.node.innerHTML && !btn.isFnKey) {
+          // caps off
+          if (!this.isCaps && !this.shiftKey) {
             btn.char.node.innerHTML = btn.small;
-            //caps on
-          } else if (!this.isCaps) {
-            btn.char.node.innerHTML = btn.shift
+            // caps on
+          } else if (this.isCaps && !this.shiftKey) {
+            btn.char.node.innerHTML = btn.shift;
           }
-        } else if (!btn.isFnKey){
-          //caps on
+        } else if (!btn.isFnKey) {
+          // caps on
           if (this.isCaps) {
-            btn.char.node.innerHTML = btn.shift
+            btn.char.node.innerHTML = btn.shift;
           } else {
             btn.char.node.innerHTML = btn.small;
           }
         }
-      })
+      });
     }
   };
 
