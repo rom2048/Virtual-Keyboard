@@ -44,9 +44,18 @@ class App extends Control {
     });
     window.addEventListener('keydown', this.handleEvent);
     window.addEventListener('keyup', this.handleEvent);
-    this.keyBoardWrapper.onmousedown = () => { };
-    this.keyBoardWrapper.onmouseup = () => { };
+    this.keyBoardWrapper.node.onmousedown = this.mouseHandleEvent;
+    this.keyBoardWrapper.node.onmouseup = this.mouseHandleEvent;
   }
+
+  mouseHandleEvent = (e) => {
+    e.stopPropagation();
+    const btnContainer = e.target.closest(`.${buttonCSS.button__wrapper}`);
+    if (!btnContainer) return;
+    const { dataset: { code } } = btnContainer;
+    btnContainer.addEventListener('mouseleave', this.resetButtonState);
+    this.handleEvent({ code, type: e.type });
+  };
 
   handleEvent = (e) => {
     const { code, type } = e;
@@ -86,6 +95,7 @@ class App extends Control {
       }
       this.keyPressed[btnObj.code] = btnObj;
     } else if (type.match(/keyup|mouseup/)) {
+      this.resetPressedButton(code);
       if (code.match(/Shift/)) {
         this.shiftKey = false;
         this.switchUpperCase(false);
@@ -96,12 +106,31 @@ class App extends Control {
     }
   };
 
+  resetButtonState = ({ target: { dataset: { code } } }) => {
+    if (code.match(/Shift/)) {
+      this.shiftKey = false;
+      this.switchUpperCase(false);
+      this.keyPressed[code].button.node.classList.remove(buttonCSS.active);
+    }
+    if (code.match(/Control/)) this.ctrKey = false;
+    if (code.match(/Alt/)) this.altKey = false;
+    this.resetPressedButton(code);
+    this.textarea.node.focus();
+  };
+
+  resetPressedButton = (targetCode) => {
+    if (!this.keyPressed[targetCode]) return;
+    if (!this.isCaps) this.keyPressed[targetCode].button.node.classList.remove(buttonCSS.active);
+    this.keyPressed[targetCode].button.node.removeEventListener('mouseleave', this.resetButtonState);
+    delete this.keyPressed[targetCode];
+  };
+
   switchUpperCase = (isTrue) => {
     if (isTrue) {
       this.keyButtons.forEach((btn) => {
         // caps on AND shift off AND no sub
         if (!btn.isFnKey && this.isCaps && !this.shiftKey && !btn.sub.node.innerHTML) {
-          if (btn.code === 'MetaLeft' || btn.code === 'ContextMenu'){
+          if (btn.code === 'MetaLeft' || btn.code === 'ContextMenu') {
             btn.char.node.innerHTML = btn.small;
           } else {
             btn.char.node.innerHTML = btn.shift;
@@ -112,7 +141,11 @@ class App extends Control {
           btn.char.node.innerHTML = btn.small;
           // else only shift on
         } else if (!btn.isFnKey && !btn.sub.node.innerHTML) {
-          btn.char.node.innerHTML = btn.shift;
+          if (btn.code === 'MetaLeft' || btn.code === 'ContextMenu') {
+            btn.char.node.innerHTML = btn.small;
+          } else {
+            btn.char.node.innerHTML = btn.shift;
+          }
         }
       });
     } else {
