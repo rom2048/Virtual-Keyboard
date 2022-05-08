@@ -158,12 +158,20 @@ class App extends Control {
             btn.char.node.innerHTML = btn.small;
             // caps on
           } else if (this.isCaps && !this.shiftKey) {
-            btn.char.node.innerHTML = btn.shift;
+            if (btn.code === 'MetaLeft' || btn.code === 'ContextMenu') {
+              btn.char.node.innerHTML = btn.small;
+            } else {
+              btn.char.node.innerHTML = btn.shift;
+            }
           }
         } else if (!btn.isFnKey) {
           // caps on
           if (this.isCaps) {
-            btn.char.node.innerHTML = btn.shift;
+            if (btn.code === 'MetaLeft' || btn.code === 'ContextMenu') {
+              btn.char.node.innerHTML = btn.small;
+            } else {
+              btn.char.node.innerHTML = btn.shift;
+            }
           } else {
             btn.char.node.innerHTML = btn.small;
           }
