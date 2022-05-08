@@ -1,4 +1,11 @@
 # Telegram: **@rom2048**
+## Deploy: https://rom2048.github.io/Virtual-Keyboard/virtual-keyboard/index.html
+
+## How to install project:
+- `git clone` this repository
+- `cd` in project folder
+- run `npm -i` to install dependecies
+- run `npm start` to see result on localhost
 
 ## Критерий оценки:
 **Максимальный балл за задание: 110**
